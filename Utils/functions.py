@@ -47,13 +47,17 @@ def login_to_atlas(driver):
                 email_entered = check_element_exists(driver, (By.XPATH, f'''//input[@value= '{os.getenv("ATLAS_USERNAME")}']'''))
                 if email_entered:
                     input_element(driver, (By.ID, "Password"), os.getenv("ATLAS_PASSWORD"))
+                    time.sleep(1)
                     click_element_by_js(driver, (By.ID, "btnSignIn"))
                     print("Signed In Successfully.")
                     return
                 else:
                     input_element(driver, (By.ID, "Email"), os.getenv("ATLAS_USERNAME"))
+                    time.sleep(1)
                     input_element(driver, (By.ID, "Password"), os.getenv("ATLAS_PASSWORD"))
+                    time.sleep(1)
                     click_element_by_js(driver, (By.ID, "RememberMe"))
+                    time.sleep(1)
                     click_element_by_js(driver, (By.ID, "btnSignIn"))
             except:
                 pass
