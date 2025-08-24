@@ -11,7 +11,7 @@ load_dotenv()
 def login_to_enrollware_and_navigate_to_tc_product_orders(driver):
     try:
         driver.get("https://enrollware.com/admin")
-        time.sleep(2)
+        time.sleep(10)
         validation_button = WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.ID, "loginButton")))
         if validation_button:
             input_element(driver, (By.ID, "username"), os.getenv("ENROLLWARE_USERNAME"))
