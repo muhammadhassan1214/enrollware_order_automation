@@ -4,3 +4,4 @@ __pycache__/
 xapths.txt
 .idea
 .env
+test_code.py

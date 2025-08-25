@@ -21,7 +21,6 @@ for index in rows_to_process:
         driver.execute_script("window.open('');")
         # switch to the new tab
         driver.switch_to.window(driver.window_handles[-1])
-        driver.get("https://atlas.heart.org/dashboard")
         login_to_atlas(driver)
         navigate_to_eCard_section(driver)
         time.sleep(2)
@@ -46,6 +45,8 @@ for index in rows_to_process:
         if assignment_site == "Assign to Instructor":
             assign_to_instructor(driver, name, quantity, product_code)
         elif assignment_site == "Assign to Training Site":
+            code = training_site.split(' ')[0].strip() if ' ' in training_site else training_site.strip()
+            training_site = get_training_site_name(code)
             assign_to_training_center(driver, quantity, product_code, training_site)
         else:
             print("Unknown assignment site. Skipping this order.")

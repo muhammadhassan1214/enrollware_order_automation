@@ -1,7 +1,9 @@
+from selenium.webdriver.common.by import By
 from Utils.utils import *
 import os
 from dotenv import load_dotenv
 from courses import AvailableCourses
+import csv
 
 available_courses = AvailableCourses()
 # Load environment variables from .env file
@@ -11,14 +13,14 @@ load_dotenv()
 def login_to_enrollware_and_navigate_to_tc_product_orders(driver):
     try:
         driver.get("https://enrollware.com/admin")
-        time.sleep(10)
+        time.sleep(5)
         validation_button = WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.ID, "loginButton")))
         if validation_button:
             input_element(driver, (By.ID, "username"), os.getenv("ENROLLWARE_USERNAME"))
             input_element(driver, (By.ID, "password"), os.getenv("ENROLLWARE_PASSWORD"))
             click_element_by_js(driver, (By.ID, "rememberMe"))
             click_element_by_js(driver, (By.ID, "loginButton"))
-            time.sleep(5)
+            time.sleep(10)
             print("Logged In Successfully.\nNavigating to TC Product Orders")
             navigate_to_tc_product_orders(driver)
     except:
@@ -34,6 +36,8 @@ def navigate_to_tc_product_orders(driver):
         pass
 
 def login_to_atlas(driver):
+    driver.get("https://atlas.heart.org/dashboard")
+    time.sleep(5)
     try:
         sign_in_button = check_element_exists(driver, (By.XPATH, "(//button[text()= 'Sign In | Sign Up'])[1]"))
         if sign_in_button:
@@ -47,17 +51,17 @@ def login_to_atlas(driver):
                 email_entered = check_element_exists(driver, (By.XPATH, f'''//input[@value= '{os.getenv("ATLAS_USERNAME")}']'''))
                 if email_entered:
                     input_element(driver, (By.ID, "Password"), os.getenv("ATLAS_PASSWORD"))
-                    time.sleep(1)
+                    time.sleep(2)
                     click_element_by_js(driver, (By.ID, "btnSignIn"))
                     print("Signed In Successfully.")
                     return
                 else:
                     input_element(driver, (By.ID, "Email"), os.getenv("ATLAS_USERNAME"))
-                    time.sleep(1)
+                    time.sleep(2)
                     input_element(driver, (By.ID, "Password"), os.getenv("ATLAS_PASSWORD"))
-                    time.sleep(1)
+                    time.sleep(2)
                     click_element_by_js(driver, (By.ID, "RememberMe"))
-                    time.sleep(1)
+                    time.sleep(2)
                     click_element_by_js(driver, (By.ID, "btnSignIn"))
             except:
                 pass
@@ -122,11 +126,11 @@ def mark_order_as_complete(driver):
     try:
         select_by_text(driver, (By.ID, "mainContent_status"), 'Complete')
         click_element_by_js(driver, (By.ID, "mainContent_statusUpdateBtn"))
-        time.sleep(1)
+        time.sleep(2)
         click_element_by_js(driver, (By.ID, "mainContent_emailBtn"))
-        time.sleep(1)
+        time.sleep(2)
         click_element_by_js(driver, (By.ID, "mainContent_sendButton"))
-        time.sleep(1)
+        time.sleep(2)
         click_element_by_js(driver, (By.ID, "mainContent_backButton"))
     except Exception as e:
         print(f"Error marking order as complete: {e}")
@@ -154,7 +158,7 @@ def go_back(driver):
     try:
         driver.close()
         driver.switch_to.window(driver.window_handles[-1])
-        time.sleep(0.5)
+        time.sleep(2)
         driver.close()
         driver.switch_to.window(driver.window_handles[0])
     except Exception as e:
@@ -164,22 +168,22 @@ def go_back(driver):
 def assign_to_instructor(driver, name, quantity, product_code):
     try:
         click_element_by_js(driver, (By.XPATH, f"//div/a[contains(text(), 'Assign to Instructor')]"))
-        time.sleep(1)
+        time.sleep(2)
         select_by_text(driver, (By.ID, "RoleId"), 'TC Admin')
-        time.sleep(1)
+        time.sleep(2)
         select_by_text(driver, (By.ID, "CourseId"), available_courses.course_name_on_eCard(product_code))
-        time.sleep(1)
+        time.sleep(2)
         select_by_text(driver, (By.ID, "ddlTC"), 'Shell CPR, LLC.')
-        time.sleep(1)
+        time.sleep(2)
         click_element_by_js(driver, (By.XPATH, "//select[@id= 'assignTo']/following-sibling::div/button"))
-        time.sleep(0.5)
-        click_element_by_js(driver, (By.XPATH, f"(//label[contains(text(), '{name}')])[1]"))
-        time.sleep(0.5)
+        time.sleep(2)
+        click_element_by_js(driver, (By.XPATH, f"(//label[contains(text(), '{name.title()}')])[1]"))
+        time.sleep(2)
         click_element_by_js(driver, (By.ID, "btnMoveNext"))
-        time.sleep(1)
+        time.sleep(2)
         input_element(driver, (By.ID, "qty1"), quantity)
         click_element_by_js(driver, (By.ID, "btnConfirm"))
-        time.sleep(1)
+        time.sleep(2)
         click_element_by_js(driver, (By.ID, "btnComplete"))
     except Exception as e:
         print(f"Error assigning to instructor: {e}")
@@ -188,17 +192,34 @@ def assign_to_instructor(driver, name, quantity, product_code):
 def assign_to_training_center(driver, quantity, product_code, training_site):
     try:
         click_element_by_js(driver, (By.XPATH, f"//div/a[contains(text(), 'Assign to Training Site')]"))
-        time.sleep(1)
+        time.sleep(2)
         select_by_text(driver, (By.ID, "tcId"), 'Shell CPR, LLC.')
-        time.sleep(1)
+        time.sleep(2)
         select_by_text(driver, (By.ID, "tsList"), training_site)
-        time.sleep(1)
+        time.sleep(2)
         select_by_text(driver, (By.ID, "courseId"), available_courses.course_name_on_eCard(product_code))
-        time.sleep(1)
+        time.sleep(2)
         input_element(driver, (By.ID, "qty"), quantity)
         click_element_by_js(driver, (By.ID, "btnValidate"))
-        time.sleep(1)
+        time.sleep(2)
         click_element_by_js(driver, (By.ID, "btnComplete"))
     except Exception as e:
         print(f"Error assigning to training site: {e}")
         pass
+
+
+def get_training_site_name(code):
+    csv_path = os.path.join('Utils', 'training_sites.csv')
+    try:
+        with open(csv_path, 'r', newline='', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row['Code'] == code:
+                    return row['Text']
+        return None
+    except FileNotFoundError:
+        print(f"Error: {csv_path} not found")
+        return None
+    except Exception as e:
+        print(f"Error reading CSV file: {e}")
+        return None
