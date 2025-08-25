@@ -3,3 +3,4 @@ Utils/chrome-dir
 __pycache__/
 xapths.txt
 .idea
+.env
